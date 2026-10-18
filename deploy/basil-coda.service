@@ -1,0 +1,16 @@
+# EXAMPLE ONLY: scripts/setup.py generates an exact-prefix service outside the
+# active systemd directory. Nothing installs/enables/starts it automatically.
+[Unit]
+Description=Basil Coda loopback listening room
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/basil-coda serve
+Restart=on-failure
+RestartSec=3
+UMask=0077
+Environment=PYTHONDONTWRITEBYTECODE=1
+
+[Install]
+WantedBy=default.target

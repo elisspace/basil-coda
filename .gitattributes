@@ -1,0 +1,4 @@
+# Vendor characterization excerpts are retained privately for research only.
+# Do not distribute third-party source snippets under the original-code license.
+engine/fixtures/server_queue_caa327f5.json export-ignore
+engine/test_server_queue_routes.mjs export-ignore

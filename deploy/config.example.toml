@@ -1,0 +1,13 @@
+# Copy outside source and select with BASIL_CONFIG=/absolute/path/config.toml.
+# Environment overrides use BASIL_<UPPERCASE_KEY>. No credentials here.
+[basil]
+hermes_profile = "dj"
+hermes_bin = "hermes" # Prefer an absolute executable path for a user service.
+player_executable = "" # Set to your independently installed Pear AppRun/binary.
+rest_url = "http://127.0.0.1:26538"
+cdp_url = "http://127.0.0.1:26539"
+worker_unit = "hermes-dj-session"
+# Directory defaults use the invoking user's HOME. Uncomment and replace if needed:
+# state_dir = "/absolute/private/state"
+# hermes_home = "/absolute/hermes-base" # contains profiles/dj/
+# player_data_dir = "/absolute/dedicated/player-data"

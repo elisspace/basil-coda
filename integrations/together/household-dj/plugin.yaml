@@ -1,0 +1,7 @@
+name: household-dj
+version: 1.0.0
+description: Fixed shared DJ controls for an authorized household; no arbitrary shell or files.
+author: Eli Gaultney
+provides_tools:
+  - household_dj
+provides_hooks: []

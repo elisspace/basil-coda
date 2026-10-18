@@ -1,0 +1,26 @@
+# Runtime, credentials and local state never belong in this source backup.
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+*.sqlite*
+*.db*
+*.log
+*.lock
+player-client.json
+session.json
+web-chat.json
+previous-queue.json
+settings.json
+config.yaml
+auth.json
+backups/
+artifacts/
+release-*/
+player/
+state/
+config.toml
+*.tar.gz
+*.zip
+.DS_Store
