@@ -19,8 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-Scope: this license covers original Basil Coda code and documentation. It does
-not relicense Pear Desktop, Hermes Agent, YouTube/Google services, recordings,
-artwork, trademarks, or any separately attributed upstream materials. See
-README.md and docs/installation.md for external dependency/distribution boundaries.
