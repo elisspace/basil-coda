@@ -39,7 +39,9 @@ def allowed(profile,source):
 def run(script,*args) -> Any:
     if script not in {'djctl.py', 'dj_session.py'}:
         raise ValueError('Unsupported helper')
-    result=subprocess.run([sys.executable,str(ENGINE/script),*args],cwd=WORK,text=True,capture_output=True,timeout=45,shell=False)
+    result=subprocess.run([sys.executable,str(ENGINE/script),*args],cwd=WORK,
+                          env=dict(os.environ, BASIL_STATE_DIR=str(WORK)),
+                          text=True,capture_output=True,timeout=45,shell=False)
     if result.returncode: raise RuntimeError('DJ helper did not confirm success; do not retry an uncertain change automatically.')
     return json.loads(result.stdout) if result.stdout.strip().startswith(('{','[')) else {'receipt':result.stdout.strip()}
 
@@ -48,16 +50,12 @@ def management():
     return result.stdout.strip()=='active'
 
 def update_brief(brief):
-    # Write only the explicitly shared session brief, never private profile memories.
-    import fcntl
-    with (WORK/'control.lock').open('a') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        state=json.loads((WORK/'session.json').read_text())
-        state['brief']=brief
-        tmp=WORK/'session.household.tmp';tmp.write_text(json.dumps(state,indent=2));tmp.replace(WORK/'session.json')
-        actual=json.loads((WORK/'session.json').read_text())
-        if actual.get('brief')!=brief:raise RuntimeError('Brief update not verified')
-    return {'brief':brief,'active':bool(state.get('active') is True and state.get('management_version') == 2),'queued_tracks_unchanged':True}
+    # Share the foreground policy path: format and stale-refill admission must
+    # change with the brief. Never write private profile memories or enable ON.
+    run('dj_session.py', 'direction', '--brief', brief)
+    state=run('dj_session.py', 'status')
+    if state.get('brief')!=brief:raise RuntimeError('Brief update not verified')
+    return {'brief':brief,'active':bool(state.get('active')),'queued_tracks_unchanged':True}
 
 def dispatch(args):
     if not isinstance(args,dict) or set(args)-{'action','brief'}:return {'ok':False,'error':'Unsupported fields'}

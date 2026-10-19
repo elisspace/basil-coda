@@ -50,6 +50,26 @@ are available with a configured player and Hermes profile. DJ ON enables the
 singleton manager without opening the player or starting/resuming music; OFF
 leaves playback alone. See [queue behavior and limits](docs/queue-release.md).
 
+Musical direction is **ongoing until explicitly replaced**, including requests
+worded "today". The latest genre, mood and track/album format survive refills,
+pause, OFF/ON and worker restarts; neither generic hits nor old preferences are
+fallbacks. Foreground assistants merge additive feedback into the complete saved
+brief and mirror it in private preferences. For a direct update without enabling
+management or touching playback/queue:
+
+```sh
+python3 engine/dj_session.py direction --brief 'Gentle beach folk' --queue-mode album
+python3 engine/dj_session.py status
+```
+
+`start` without a brief reuses the saved direction and format. An explicit new
+brief or mode also takes effect when already ON, without launching a second worker.
+`direction` keeps ON/OFF unchanged and revokes stale refill admission; existing
+queued music remains. An optional generation-scoped queue guard must be explicitly
+re-armed after a direction change; it is not silently reauthorized. Omitted format
+is retained unless the brief explicitly
+requests full/whole/complete albums or a track mix. No date-based expiry exists.
+
 Audio comes from the separate desktop player, not from the webpage. Web/REST/CDP
 must stay on loopback. Host/Origin/custom-header protections are not multi-user
 authentication. A restricted Hermes DJ profile is **not an OS sandbox**; only a

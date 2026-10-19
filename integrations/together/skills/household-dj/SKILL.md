@@ -27,7 +27,12 @@ No alternate helpers, raw state edits, new workers or account changes are allowe
 - Explicit skip, pause, resume: use the corresponding fixed transport action.
 - Stop music: stop. Stop management but retain music: stop_management.
 - Feedback: save an explicit musical preference using feedback; it changes future
-  choices, not the existing queue.
+  choices, not the existing queue. Genre, mood and format remain ongoing until
+  explicitly replaced, even when worded "today", across OFF/ON and restarts.
+  Read status first and merge additive feedback into the complete current brief;
+  retain aspects not explicitly changed. Never restore generic hits, older modes
+  or previous/inactive preferences. Explicit full-album/track-mix wording updates
+  format; otherwise the saved format is retained. Feedback never enables ON.
 - Start/switch direction: action=start with the explicit musical brief; preserves
   queued tracks and playback, verifies management. Empty queues require private
   DJ setup; do not seed, clear or start playback from the household tool.

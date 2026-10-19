@@ -177,6 +177,18 @@ class HTTPTests(unittest.TestCase):
         restored = server.Application(runtime=self.app.runtime, web=self.app.web, persona=self.app.persona)
         self.assertEqual(restored.chat_snapshot()['messages'], history['messages'])
 
+    def test_chat_policy_keeps_direction_ongoing_and_requires_saved_readback(self):
+        self.app.messages = [{'role': 'user', 'content': 'Gentle full albums today'},
+                             {'role': 'assistant', 'content': 'Saved'},
+                             {'role': 'user', 'content': 'What is playing?'}]
+        prompt = self.app.chat_prompt()
+        for required in ('ongoing until explicitly replaced', 'even when worded "today"',
+                         'dj_session direction --brief', '--queue-mode album|tracks',
+                         'mirror preferences.md, and read back both',
+                         'not an implicit reset of saved musical direction',
+                         'never restore generic hits'):
+            self.assertIn(required, prompt)
+
     def test_controls_fixed_helpers_and_verified_outcomes(self):
         with patch.object(self.app, 'helper') as helper, patch.object(server.djctl, 'live_status', return_value={'paused': True}):
             self.assertEqual(self.request('POST', '/api/control', {'action': 'pause'})[0], 200)

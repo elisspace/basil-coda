@@ -1,5 +1,8 @@
 import importlib.util
+import json
+import os
 import pathlib
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -81,5 +84,36 @@ class BoundaryTests(unittest.TestCase):
         with patch.object(m,'run',return_value={'title':'verified'}) as run:
             self.assertTrue(m.dispatch({'action':'skip'})['ok'])
             run.assert_called_once_with('djctl.py','next')
+
+    def test_feedback_updates_standing_format_and_revokes_old_work_without_on(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root/'session.json').write_text(json.dumps({
+                'active': False, 'brief': 'Old hits', 'queue_mode': 'tracks',
+                'generation': 'old', 'refill_remaining': 4, 'custom': 'keep'}))
+            with patch.object(m, 'WORK', root), patch.dict(os.environ, {'BASIL_STATE_DIR': str(root)}):
+                result = m.dispatch({'action': 'feedback', 'brief': 'Full albums of beach folk today'})
+            self.assertTrue(result['ok'])
+            state = json.loads((root/'session.json').read_text())
+            self.assertEqual(state['brief'], 'Full albums of beach folk today')
+            self.assertEqual(state['queue_mode'], 'album')
+            self.assertEqual(state['refill_mode'], 'album')
+            self.assertNotEqual(state['generation'], 'old')
+            self.assertEqual(state['refill_remaining'], 0)
+            self.assertFalse(state['active'])
+            self.assertEqual(state['custom'], 'keep')
+
+    def test_feedback_reports_legacy_raw_active_as_effectively_off(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root/'session.json').write_text(json.dumps({
+                'active': True, 'management_version': 1, 'brief': 'Old mood',
+                'generation': 'old', 'queue_mode': 'tracks'}))
+            with patch.object(m, 'WORK', root), patch.dict(os.environ, {'BASIL_STATE_DIR': str(root)}):
+                result = m.dispatch({'action': 'feedback', 'brief': 'Quiet folk today'})
+            self.assertTrue(result['ok'])
+            self.assertFalse(result['result']['active'])
+            state = json.loads((root/'session.json').read_text())
+            self.assertEqual(state['management_version'], 1, 'Feedback must not arm legacy management')
 
 if __name__=='__main__':unittest.main()
